@@ -1,0 +1,36 @@
+services:
+  backend:
+    build: ./backend
+    container_name: localrag-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=LocalRAG-Backend
+      - PORT=8000
+      # Connect container to Ollama running on host OS
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - LLM_MODEL=llama3:latest
+      - EMBEDDING_MODEL=nomic-embed-text
+    volumes:
+      - backend_data:/app/PDF_FILE
+      - chroma_data:/app/chroma_DB
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: localrag-frontend
+    ports:
+      - "8501:8501"
+    command: streamlit run app/main.py --server.port=8501 --server.address=0.0.0.0
+    environment:
+      # Use Docker internal service name resolution to talk to backend
+      - BACKEND_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend_data:
+  chroma_data:

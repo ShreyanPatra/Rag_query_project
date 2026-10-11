@@ -1,0 +1,12 @@
+pydantic_settings
+fastapi
+uvicorn
+chromadb
+pypdf
+langchain
+langchain_community
+chromadb
+langchain-ollama
+langchain-chroma 
+python-multipart
+python-dotenv
